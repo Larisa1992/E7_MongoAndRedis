@@ -1,5 +1,5 @@
 import redis
-import requests
+
 from bson.objectid import ObjectId
 from eve.io.mongo import mongo
 from eve import Eve
@@ -101,15 +101,20 @@ def add_tag(response):
         print(type(response[0]['tags']))
 
     print(f'add tags {response}')
-    # for item in items:
-    #     if 'tags' in item:
-    #         item.tags.append()
+
+# кэшируем создание поста
+def for_cache(response):
+    print(response[0]['_id'])
+    r.set(str(response[0]['_id']), ';'.join(str(atr) for atr in response))
+    print('will bi cache')
 
 # def add_comment(resoutce, items):
 
 # attach a callback function to POST requests.
-# app.on_insert_document += add_tag
-# app.on_fetched_document += add_tag
+app.on_inserted_document += for_cache
+
+#  not work
+app.on_fetched_document += for_cache
 # перехват отрисовки ответа
 app.on_fetched_resource += calc_counts
 
